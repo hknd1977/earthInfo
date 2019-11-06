@@ -1,6 +1,6 @@
 earth_GOF <- function(model) {
-  require(caret,quietly = TRUE)
-  require(pROC,quietly = TRUE)
+    suppressMessages(require(caret, quietly = TRUE))
+    suppressMessages(require(pROC, quietly = TRUE))
     if (class(model) != "earth") {
         stop("wrong model type.")
     }
@@ -30,11 +30,11 @@ earth_GOF <- function(model) {
         AIC <- n * log(mean(error^2), base = exp(1)) + 2 * k
         AICc <- n * log(mean(error^2), base = exp(1)) + (2 * k) + (2 * k * (k + 1)/(n - k - 1))
         # plot(y,predict(model))
-        info <- structure(list(n = n, k = k, sdratio = sd_ratio, coef_of_variation = coef_of_variation, pearson_correlation = pearson_correlation,
-            RMSE = RMSE, ME = ME, RAE = RAE, MAPE = MAPE, MAD = MAD, RSQ = Rsq, adj_RSQ = adj_RSQ, AIC = AIC, AICc = AICc,
+        info <- structure(list(n = n, k = k, sdratio = sd_ratio, coef_of_variation = coef_of_variation, pearson_correlation = pearson_correlation, 
+            RMSE = RMSE, ME = ME, RAE = RAE, MAPE = MAPE, MAD = MAD, RSQ = Rsq, adj_RSQ = adj_RSQ, AIC = AIC, AICc = AICc, 
             GCV = model$gcv, cor_test = cor_test, model_summary <- model_summary), class = "infoEarth")
     } else {
-
+        
         ## if the model type is a binomial glm earth --------------------------------------------------------
         if (length(model$levels) > 2) {
             stop("only able to process binomial earth-glm model")
@@ -45,12 +45,13 @@ earth_GOF <- function(model) {
         all_coords <- coords(earth_ROC, seq(0.05, 0.95, by = 0.1), transpose = FALSE)
         all_coords$sum <- all_coords[, 2] + all_coords[, 3]
         threshold <- as.numeric(coords(earth_ROC, input = "threshold", x = "best", transpose = FALSE)["threshold"])
-
-        confusion_matrix <- confusionMatrix(data = as.factor(ifelse(fitted(model) > threshold, 1, 0)), as.factor(model$y))
-        info <- structure(list(dev_ratio = model$glm.stats[5], AIC = model$glm.stats[6], auc = auc, all_coords = as.data.frame(all_coords),
-        threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC, plot_ROC <- plot_ROC), class = "infoEarthGLM")
+        
+        confusion_matrix <- confusionMatrix(data = as.factor(ifelse(fitted(model) > threshold, 1, 0)), as.factor(model$y), 
+            positive = "1")
+        info <- structure(list(dev_ratio = model$glm.stats[5], AIC = model$glm.stats[6], auc = auc, all_coords = as.data.frame(all_coords), 
+            threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC, plot_ROC <- plot_ROC), class = "infoEarthGLM")
     }
-
+    
     return(info)
 }
 
@@ -64,9 +65,15 @@ summary.infoEarth <- function(x, digits = 3) {
     print(tmp)
 }
 
+print.infoEarth <- function(x, digits = 3) {
+    options(digits = digits)
+    tmp <- as.data.frame(x[c(1:15)])
+    row.names(tmp) <- NULL
+    print(tmp)
+}
 # Summary function for infoEarthGLM class -------------------------------------
 
-summary.infoEarthGLM <- function(x, digits = 3,plot=FALSE) {
+summary.infoEarthGLM <- function(x, digits = 3, plot = FALSE) {
     options(digits = digits)
     cat("Area under the curve : ", x$auc, "\n\n")
     cat("Coordinates table \n")
@@ -74,5 +81,16 @@ summary.infoEarthGLM <- function(x, digits = 3,plot=FALSE) {
     cat("\n\n")
     cat("Best threshold : ", x$threshold, "\n\n")
     print(x$confusion_matrix)
-    if (plot) plot(x$earth_ROC)
+    if (plot) 
+        plot(x$earth_ROC)
+}
+
+print.infoEarthGLM < -function(x, digits = 3) {
+    options(digits = digits)
+    cat("Area under the curve : ", x$auc, "\n\n")
+    cat("Coordinates table \n")
+    print(x$all_coords)
+    cat("\n\n")
+    cat("Best threshold : ", x$threshold, "\n\n")
+    print(x$confusion_matrix)
 }
