@@ -4,11 +4,8 @@
 
 
 # GCV for döngüsüyle en küçük GCV nin hangi derecede olduğunu bulmak için fonksiyon hazırlanıyor
-<<<<<<< HEAD
-fitGCV <- function(formula, data, maxDegree = 3) {
-=======
+
 fitGCV <- function(formula, data, maxDegree = 3,...) {
->>>>>>> 1
     require(caret,quietly = TRUE)
     require(earth,quietly = TRUE)
     for (degree in 1:maxDegree) {

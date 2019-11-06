@@ -18,10 +18,6 @@ earth_GOF <- function(model) {
         cor_test <- cor.test(y, predict(model))
         pearson_correlation <- round(cor(y, predict(model)))
         error <- y - predict(model)
-<<<<<<< HEAD
-        # resid(model) veya residuals(model) 'de hata vektörünü veriyor
-=======
->>>>>>> 1
         sd_ratio <- sd(error)/sd(y)
         coef_of_variation <- sd(error) * 100/mean(y)
         RMSE <- sqrt(mean(error^2))
@@ -52,11 +48,7 @@ earth_GOF <- function(model) {
 
         confusion_matrix <- confusionMatrix(data = as.factor(ifelse(fitted(model) > threshold, 1, 0)), as.factor(model$y))
         info <- structure(list(dev_ratio = model$glm.stats[5], AIC = model$glm.stats[6], auc = auc, all_coords = as.data.frame(all_coords),
-<<<<<<< HEAD
-            threshold = threshold, confusion_matrix = confussion_matrix, earth_ROC = earth_ROC, plot_ROC <- plot_ROC), class = "infoEarthGLM")
-=======
-            threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC, plot_ROC <- plot_ROC), class = "infoEarthGLM")
->>>>>>> 1
+        threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC, plot_ROC <- plot_ROC), class = "infoEarthGLM")
     }
 
     return(info)
