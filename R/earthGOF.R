@@ -40,7 +40,6 @@ earth_GOF <- function(model) {
             stop("only able to process binomial earth-glm model")
         }
         earth_ROC <- roc(predictor = as.vector(fitted(model)), response = as.vector(model$y))
-        plot_ROC <- plot(earth_ROC)
         auc <- auc(earth_ROC)
         all_coords <- coords(earth_ROC, seq(0.05, 0.95, by = 0.1), transpose = FALSE)
         all_coords$sum <- all_coords[, 2] + all_coords[, 3]
@@ -49,7 +48,7 @@ earth_GOF <- function(model) {
         confusion_matrix <- confusionMatrix(data = as.factor(ifelse(fitted(model) > threshold, 1, 0)), as.factor(model$y),
             positive = "1")
         info <- structure(list(dev_ratio = model$glm.stats[5], AIC = model$glm.stats[6], auc = auc, all_coords = as.data.frame(all_coords),
-            threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC, plot_ROC <- plot_ROC), class = "infoEarthGLM")
+            threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC), class = "infoEarthGLM")
     }
 
     return(info)
@@ -81,8 +80,7 @@ summary.infoEarthGLM <- function(x, digits = 3, plot = FALSE) {
     cat("\n\n")
     cat("Best threshold : ", x$threshold, "\n\n")
     print(x$confusion_matrix)
-    if (plot)
-        plot(x$earth_ROC)
+    if (plot) plot(x$earth_ROC)
 }
 
 print.infoEarthGLM <- function(x, digits = 3) {
