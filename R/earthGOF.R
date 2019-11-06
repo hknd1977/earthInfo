@@ -1,3 +1,29 @@
+#' Goodness of fitting values of an earth model.
+#'
+#' @param model an earth model (keepxy argument should be set TRUE).
+#' @return The goodness of fitting  values of \code{model}.
+#' @examples
+#' # an example for normal lm earth model
+#'
+#' library(earth)
+#' library(earthInfo)
+#' data("iris")
+#' fit <- earth(Sepal.Width~., data=iris, degree=2,keepxy = TRUE)
+#' gof <- earth_GOF(fit)
+#' summary(gof,digits = 3)
+#'
+#'
+#'
+#' # an example for a binomial glm earth model
+#'
+#' library(earth)
+#' library(earthInfo)
+#' data(etitanic)
+#' fit <- earth(survived~., data=etitanic, degree =2, glm = list(family=binomial),keepxy = TRUE)
+#' gof <- earth_GOF(fit)
+#' summary(gof)
+
+
 earth_GOF <- function(model) {
     suppressMessages(require(caret, quietly = TRUE))
     suppressMessages(require(pROC, quietly = TRUE))
@@ -58,10 +84,9 @@ earth_GOF <- function(model) {
 # Summary function for infoEarth class ----------------------------------------
 
 summary.infoEarth <- function(x, digits = 3) {
-    options(digits = digits)
     tmp <- as.data.frame(x[c(1:15)])
     row.names(tmp) <- NULL
-    print(tmp)
+    print(tmp,digits = digits)
 }
 
 print.infoEarth <- function(x, digits = 3) {

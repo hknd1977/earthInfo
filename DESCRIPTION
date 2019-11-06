@@ -13,4 +13,4 @@ Imports:
     caret,
     earth,
     pROC
-
+RoxygenNote: 6.1.1
