@@ -22,5 +22,5 @@ Small function to minimize GCV value of an earth model.
 \examples{
 library(earthInfo)
 data("iris")
-fit <- fitGCV(Sepal.Width~., data=iris, maxDegree = 10)
+fit <- fit_GCV(Sepal.Width~., data=iris, maxDegree = 10)
 }

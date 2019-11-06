@@ -22,8 +22,7 @@
 #' fit <- earth(survived~., data=etitanic, degree =2, glm = list(family=binomial),keepxy = TRUE)
 #' gof <- earth_GOF(fit)
 #' summary(gof)
-
-
+#' @export
 earth_GOF <- function(model) {
     suppressMessages(require(caret, quietly = TRUE))
     suppressMessages(require(pROC, quietly = TRUE))
@@ -82,13 +81,13 @@ earth_GOF <- function(model) {
 
 
 # Summary function for infoEarth class ----------------------------------------
-
+#' @export
 summary.infoEarth <- function(x, digits = 3) {
     tmp <- as.data.frame(x[c(1:15)])
     row.names(tmp) <- NULL
     print(tmp,digits = digits)
 }
-
+#' @export
 print.infoEarth <- function(x, digits = 3) {
     options(digits = digits)
     tmp <- as.data.frame(x[c(1:15)])
@@ -96,7 +95,7 @@ print.infoEarth <- function(x, digits = 3) {
     print(tmp)
 }
 # Summary function for infoEarthGLM class -------------------------------------
-
+#' @export
 summary.infoEarthGLM <- function(x, digits = 3, plot = FALSE) {
     options(digits = digits)
     cat("Area under the curve : ", x$auc, "\n\n")
@@ -107,7 +106,7 @@ summary.infoEarthGLM <- function(x, digits = 3, plot = FALSE) {
     print(x$confusion_matrix)
     if (plot) plot(x$earth_ROC)
 }
-
+#' @export
 print.infoEarthGLM <- function(x, digits = 3) {
     options(digits = digits)
     cat("Area under the curve : ", x$auc, "\n\n")
