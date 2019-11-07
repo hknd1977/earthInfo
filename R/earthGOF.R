@@ -55,9 +55,23 @@ earth_GOF <- function(model) {
         AIC <- n * log(mean(error^2), base = exp(1)) + 2 * k
         AICc <- n * log(mean(error^2), base = exp(1)) + (2 * k) + (2 * k * (k + 1)/(n - k - 1))
         # plot(y,predict(model))
-        info <- structure(list(n = n, k = k, sdratio = sd_ratio, coef_of_variation = coef_of_variation, pearson_correlation = pearson_correlation,
-            RMSE = RMSE, ME = ME, RAE = RAE, MAPE = MAPE, MAD = MAD, RSQ = Rsq, adj_RSQ = adj_RSQ, AIC = AIC, AICc = AICc,
-            GCV = model$gcv, cor_test = cor_test, model_summary <- model_summary), class = "infoEarth")
+        info <- structure(list(n = n,
+                               k = k,
+                               sdratio = sd_ratio,
+                               coef_of_variation = coef_of_variation,
+                               pearson_correlation = pearson_correlation,
+                               RMSE = RMSE,
+                               ME = ME,
+                               RAE = RAE,
+                               MAPE = MAPE,
+                               MAD = MAD,
+                               RSQ = Rsq,
+                               adj_RSQ = adj_RSQ,
+                               AIC = AIC,
+                               AICc = AICc,
+                               GCV = model$gcv,
+                               cor_test = cor_test,
+                               model_summary = model_summary), class = "infoEarth")
     } else {
 
         ## if the model type is a binomial glm earth --------------------------------------------------------
@@ -79,11 +93,17 @@ earth_GOF <- function(model) {
     return(info)
 }
 
+library(earth)
+library(earthInfo)
+data("iris")
+fit <- earth(Sepal.Width~., data=iris, degree=2,keepxy = TRUE)
+gof <- earth_GOF(fit)
+summary(gof,digits = 3)
 
 # Summary function for infoEarth class ----------------------------------------
 #' @export
 summary.infoEarth <- function(x, digits = 3) {
-    tmp <- as.data.frame(x[c(1:15)])
+    tmp <- unlist(x[c(1:15)])
     row.names(tmp) <- NULL
     print(tmp,digits = digits)
 }
