@@ -93,12 +93,6 @@ earth_GOF <- function(model) {
     return(info)
 }
 
-library(earth)
-library(earthInfo)
-data("iris")
-fit <- earth(Sepal.Width~., data=iris, degree=2,keepxy = TRUE)
-gof <- earth_GOF(fit)
-summary(gof,digits = 3)
 
 # Summary function for infoEarth class ----------------------------------------
 #' @export
