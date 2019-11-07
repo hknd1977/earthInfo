@@ -78,13 +78,13 @@ earth_GOF <- function(model) {
         if (length(model$levels) > 2) {
             stop("only able to process binomial earth-glm model")
         }
-        suppressMessages(earth_ROC <- roc(predictor = as.vector(fitted(model)), response = as.vector(model$y)))
+        suppressMessages(earth_ROC <- roc(predictor = as.vector(predict(model,type="response")), response = as.vector(model$y)))
         auc <- auc(earth_ROC)
         all_coords <- coords(earth_ROC, seq(0.05, 0.95, by = 0.1), transpose = FALSE)
         all_coords$sum <- all_coords[, 2] + all_coords[, 3]
         threshold <- as.numeric(coords(earth_ROC, input = "threshold", x = "best", transpose = FALSE)["threshold"])
 
-        confusion_matrix <- confusionMatrix(data = as.factor(ifelse(fitted(model) > threshold, 1, 0)), as.factor(model$y),
+        confusion_matrix <- confusionMatrix(data = as.factor(ifelse(predict(model,type="response") > threshold, 1, 0)), as.factor(model$y),
             positive = "1")
         info <- structure(list(dev_ratio = model$glm.stats[5], AIC = model$glm.stats[6], auc = auc, all_coords = as.data.frame(all_coords),
             threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC), class = "infoEarthGLM")
