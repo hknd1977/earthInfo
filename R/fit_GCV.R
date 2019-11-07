@@ -26,7 +26,8 @@ fit_GCV <- function(formula, data, max_degree = 3, ...) {
         if (!exists("fit", inherits = FALSE) || (fit > fitTemp$gcv)) {
             fit <- fitTemp$gcv
             Interaction <- maxInter
-            last <- list(degree = degree, Interaction = Interaction, metric = fitTemp$gcv)
+            last <- list(degree = degree, Interaction = Interaction, metric = fitTemp$gcv,
+                         model = fitTemp)
         }
     }
     return(last)

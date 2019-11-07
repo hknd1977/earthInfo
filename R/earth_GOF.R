@@ -41,7 +41,7 @@ earth_GOF <- function(model) {
         model.lm <- lm(y ~ bx)
         model_summary <- summary(model.lm)
         cor_test <- cor.test(y, predict(model))
-        pearson_correlation <- round(cor(y, predict(model)))
+        pearson_correlation <- as.numeric(round(cor(y, predict(model))))
         error <- y - predict(model)
         sd_ratio <- sd(error)/sd(y)
         coef_of_variation <- sd(error) * 100/mean(y)
@@ -50,16 +50,16 @@ earth_GOF <- function(model) {
         RAE <- sqrt(sum(error^2)/sum(y^2))
         MAPE <- mean(abs(error/y)) * 100
         MAD <- mean(abs(error))
-        Rsq <- 1 - (sum(error^2)/(var(y) * (n - 1)))
-        adj_RSQ <- 1 - ((1 - Rsq) * (n - 1)/(n - k - 1))
+        Rsq <- as.numeric(1 - (sum(error^2)/(var(y) * (n - 1))))
+        adj_RSQ <- as.numeric(1 - ((1 - Rsq) * (n - 1)/(n - k - 1)))
         AIC <- n * log(mean(error^2), base = exp(1)) + 2 * k
         AICc <- n * log(mean(error^2), base = exp(1)) + (2 * k) + (2 * k * (k + 1)/(n - k - 1))
         # plot(y,predict(model))
         info <- structure(list(n = n,
                                k = k,
                                sdratio = sd_ratio,
-                               coef_of_variation = coef_of_variation,
-                               pearson_correlation = pearson_correlation,
+                               coef_of_var = coef_of_variation,
+                               p_corr = pearson_correlation,
                                RMSE = RMSE,
                                ME = ME,
                                RAE = RAE,
@@ -78,7 +78,7 @@ earth_GOF <- function(model) {
         if (length(model$levels) > 2) {
             stop("only able to process binomial earth-glm model")
         }
-        earth_ROC <- roc(predictor = as.vector(fitted(model)), response = as.vector(model$y))
+        suppressMessages(earth_ROC <- roc(predictor = as.vector(fitted(model)), response = as.vector(model$y)))
         auc <- auc(earth_ROC)
         all_coords <- coords(earth_ROC, seq(0.05, 0.95, by = 0.1), transpose = FALSE)
         all_coords$sum <- all_coords[, 2] + all_coords[, 3]
@@ -97,7 +97,8 @@ earth_GOF <- function(model) {
 # Summary function for infoEarth class ----------------------------------------
 #' @export
 summary.infoEarth <- function(x, digits = 3) {
-    tmp <- unlist(x[c(1:15)])
+    tmp <- as.data.frame(x[c(1:15)])
+    tmp <- as.data.frame(tmp)
     row.names(tmp) <- NULL
     print(tmp,digits = digits)
 }
