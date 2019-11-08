@@ -6,23 +6,23 @@
 #'
 #' @param formula standart R formula (Eg: Spescies~ .).
 #' @param data data frame .
-#' @param max_degree using to tune model.
+#' @param maxDegree using to tune model.
 #' @param method use "acc" for accuracy  or "auc" for are under the curve.
 #' @return Returns a list consists maximum ac value, maximum interactions and optimum degree of the model.
 #' @examples
 #' library(earthInfo)
 #' data("iris")
-#' fit <- fit_GCV(Sepal.Width~., data=iris, maxDegree = 10)
+#' fit <- fitGlm(Sepal.Width~., data=iris, maxDegree = 10)
 #' @export
-fit_glm <- function(formula, data, max_degree = 9, method="acc", ...) {
+fitGlm<- function(formula, data, maxDegree = 9, method="acc", ...) {
   suppressMessages(require(caret, quietly = TRUE))
   suppressMessages(require(earth, quietly = TRUE))
-  for (degree in 1:max_degree) {
+  for (degree in 1:maxDegree) {
       fitTemp <- earth(formula, data = data, degree = degree,
                        nk = 1000, glm=list(family=binomial),keepxy = TRUE)
-      suppressMessages(tempGOF <- earth_GOF(fitTemp))
+      suppressMessages(tempGOF <- earthGOF(fitTemp))
       auc <- as.numeric(tempGOF$auc)
-      acc <- as.numeric(tempGOF$confusion_matrix$overall["Accuracy"])
+      acc <- as.numeric(tempGOF$confusionMatrix$overall["Accuracy"])
       if (method=="acc") {
         metric <- acc
       } else {

@@ -11,9 +11,9 @@
 #' @examples
 #' library(earthInfo)
 #' data("iris")
-#' fit <- fit_GCV(Sepal.Width~., data=iris, maxDegree = 10)
+#' fit <- fitGCV(Sepal.Width~., data=iris, maxDegree = 10)
 #' @export
-fit_GCV <- function(formula, data, max_degree = 3, ...) {
+fitGCV <- function(formula, data, max_degree = 3, ...) {
 
     suppressMessages(require(caret, quietly = TRUE))
     suppressMessages(require(earth, quietly = TRUE))

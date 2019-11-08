@@ -9,7 +9,7 @@
 #' library(earthInfo)
 #' data("iris")
 #' fit <- earth(Sepal.Width~., data=iris, degree=2,keepxy = TRUE)
-#' gof <- earth_GOF(fit)
+#' gof <- earthGOF(fit)
 #' summary(gof,digits = 3)
 #'
 #'
@@ -20,10 +20,10 @@
 #' library(earthInfo)
 #' data(etitanic)
 #' fit <- earth(survived~., data=etitanic, degree =2, glm = list(family=binomial),keepxy = TRUE)
-#' gof <- earth_GOF(fit)
+#' gof <- earthGOF(fit)
 #' summary(gof)
 #' @export
-earth_GOF <- function(model) {
+earthGOF <- function(model) {
     suppressMessages(require(caret, quietly = TRUE))
     suppressMessages(require(pROC, quietly = TRUE))
     if (class(model) != "earth") {
@@ -39,55 +39,59 @@ earth_GOF <- function(model) {
         k <- length(model$selected.terms)
         bx <- model.matrix(model)[, -1]
         model.lm <- lm(y ~ bx)
-        model_summary <- summary(model.lm)
-        cor_test <- cor.test(y, predict(model))
-        pearson_correlation <- as.numeric(round(cor(y, predict(model))))
+        modelSummary <- summary(model.lm)
+        corTest <- cor.test(y, predict(model))
+        pearsonCorrelation <- as.numeric(round(cor(y, predict(model))))
         error <- y - predict(model)
-        sd_ratio <- sd(error)/sd(y)
-        coef_of_variation <- sd(error) * 100/mean(y)
+        sdRatio <- sd(error)/sd(y)
+        coefOfVariation <- sd(error) * 100/mean(y)
         RMSE <- sqrt(mean(error^2))
         ME <- mean(error)
         RAE <- sqrt(sum(error^2)/sum(y^2))
         MAPE <- mean(abs(error/y)) * 100
         MAD <- mean(abs(error))
         Rsq <- as.numeric(1 - (sum(error^2)/(var(y) * (n - 1))))
-        adj_RSQ <- as.numeric(1 - ((1 - Rsq) * (n - 1)/(n - k - 1)))
+        adjRSQ <- as.numeric(1 - ((1 - Rsq) * (n - 1)/(n - k - 1)))
         AIC <- n * log(mean(error^2), base = exp(1)) + 2 * k
         AICc <- n * log(mean(error^2), base = exp(1)) + (2 * k) + (2 * k * (k + 1)/(n - k - 1))
         # plot(y,predict(model))
         info <- structure(list(n = n,
                                k = k,
-                               sdratio = sd_ratio,
-                               coef_of_var = coef_of_variation,
-                               p_corr = pearson_correlation,
+                               sdRatio = sdRatio,
+                               coef_of_var = coefOfVariation,
+                               pCorr = pearsonCorrelation,
                                RMSE = RMSE,
                                ME = ME,
                                RAE = RAE,
                                MAPE = MAPE,
                                MAD = MAD,
                                RSQ = Rsq,
-                               adj_RSQ = adj_RSQ,
+                               adjRSQ = adjRSQ,
                                AIC = AIC,
                                AICc = AICc,
                                GCV = model$gcv,
-                               cor_test = cor_test,
-                               model_summary = model_summary), class = "infoEarth")
+                               corTest = corTest,
+                               modelSummary = modelSummary), class = "infoEarth")
     } else {
 
         ## if the model type is a binomial glm earth --------------------------------------------------------
         if (length(model$levels) > 2) {
             stop("only able to process binomial earth-glm model")
         }
-        suppressMessages(earth_ROC <- roc(predictor = as.vector(predict(model,type="response")), response = as.vector(model$y)))
-        auc <- auc(earth_ROC)
-        all_coords <- coords(earth_ROC, seq(0.05, 0.95, by = 0.1), transpose = FALSE)
-        all_coords$sum <- all_coords[, 2] + all_coords[, 3]
-        threshold <- as.numeric(coords(earth_ROC, input = "threshold", x = "best", transpose = FALSE)["threshold"])
+        suppressMessages(earthROC <- roc(predictor = as.vector(predict(model,type="response")), response = as.vector(model$y)))
+        auc <- auc(earthROC)
+        allCoords <- coords(earthROC, seq(0.05, 0.95, by = 0.1), transpose = FALSE)
+        allCoords$sum <- allCoords[, 2] + allCoords[, 3]
+        threshold <- as.numeric(coords(earthROC, input = "threshold", x = "best", transpose = FALSE)["threshold"])
 
-        confusion_matrix <- confusionMatrix(data = as.factor(ifelse(predict(model,type="response") > threshold, 1, 0)), as.factor(model$y),
+        confusionMatrix <- confusionMatrix(data = as.factor(ifelse(predict(model,type="response") > threshold, 1, 0)), as.factor(model$y),
             positive = "1")
-        info <- structure(list(dev_ratio = model$glm.stats[5], AIC = model$glm.stats[6], auc = auc, all_coords = as.data.frame(all_coords),
-            threshold = threshold, confusion_matrix = confusion_matrix, earth_ROC = earth_ROC), class = "infoEarthGLM")
+        info <- structure(list(dev_ratio = model$glm.stats[5],
+                               AIC = model$glm.stats[6],
+                               auc = auc, allCoords = as.data.frame(allCoords),
+                               threshold = threshold,
+                               confusionMatrix = confusionMatrix,
+                               earthROC = earthROC), class = "infoEarthGLM")
     }
 
     return(info)
@@ -115,19 +119,19 @@ summary.infoEarthGLM <- function(x, digits = 3, plot = FALSE) {
     options(digits = digits)
     cat("Area under the curve : ", x$auc, "\n\n")
     cat("Coordinates table \n")
-    print(x$all_coords)
+    print(x$allCoords)
     cat("\n\n")
     cat("Best threshold : ", x$threshold, "\n\n")
-    print(x$confusion_matrix)
-    if (plot) plot(x$earth_ROC)
+    print(x$confusionMatrix)
+    if (plot) plot(x$earthROC)
 }
 #' @export
 print.infoEarthGLM <- function(x, digits = 3) {
     options(digits = digits)
     cat("Area under the curve : ", x$auc, "\n\n")
     cat("Coordinates table \n")
-    print(x$all_coords)
+    print(x$allCoords)
     cat("\n\n")
     cat("Best threshold : ", x$threshold, "\n\n")
-    print(x$confusion_matrix)
+    print(x$confusionMatrix)
 }
