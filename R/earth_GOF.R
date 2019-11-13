@@ -135,3 +135,10 @@ print.infoEarthGLM <- function(x, digits = 3) {
     cat("Best threshold : ", x$threshold, "\n\n")
     print(x$confusionMatrix)
 }
+#' @export
+as.data.frame.infoEarth <- function(x, digits = 3) {
+  tmp <- as.data.frame(x[c(1:15)])
+  tmp <- as.data.frame(tmp)
+  row.names(tmp) <- NULL
+  return(tmp,digits = digits)
+}

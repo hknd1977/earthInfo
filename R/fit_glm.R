@@ -11,8 +11,9 @@
 #' @return Returns a list consists maximum ac value, maximum interactions and optimum degree of the model.
 #' @examples
 #' library(earthInfo)
-#' data("iris")
-#' fit <- fitGlm(Sepal.Width~., data=iris, maxDegree = 10)
+#' data(etitanic)
+#' fit <- fitGlm(survived~., data=etitanic, maxDegree = 10)
+#' summary(fit)
 #' @export
 fitGlm<- function(formula, data, maxDegree = 9, method="acc", ...) {
   suppressMessages(require(caret, quietly = TRUE))

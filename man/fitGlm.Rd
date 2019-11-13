@@ -23,6 +23,6 @@ Small function to maximize  accuracy of an binomial glm earth model.
 }
 \examples{
 library(earthInfo)
-data("iris")
-fit <- fitGlm(Sepal.Width~., data=iris, maxDegree = 10)
+data(etitanic)
+fit <- fitGlm(survived~., data=etitanic, maxDegree = 10)
 }
